@@ -5,6 +5,7 @@ from aiogram.types import Message
 from aiogram.utils import executor
 from dotenv import load_dotenv
 from bot.handlers.menu_handler import register_menu_handlers
+from bot.handlers.theory import register_theory_handler
 
 load_dotenv()
 BOT_TOKEN = os.getenv('BOT_TOKEN')
@@ -13,6 +14,7 @@ bot = Bot(token = BOT_TOKEN)
 dp = Dispatcher(bot)
 
 register_menu_handlers(dp)
+register_theory_handler(dp)
 
 @dp.message_handler(commands=["start"])
 async def start_command(message: Message):
