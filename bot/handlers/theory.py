@@ -16,7 +16,7 @@ async def select_grade(callback: CallbackQuery):
     await callback.message.edit_text("Выбери предмет:", reply_markup=get_subject_keyboard(grade))
 
 async def select_subject(callback: CallbackQuery):
-    subject = callback.data.split("_")[1]
+    subject = callback.data.split("_")[0]
     user_context[callback.from_user.id]["subject"] = subject
     grade = user_context[callback.from_user.id]["grade"]
     topics = get_topics_by_class_and_subject(grade, subject)
@@ -64,6 +64,6 @@ async def toggle_read(callback: CallbackQuery):
 def register_theory_handler(dp: Dispatcher):
     dp.register_message_handler(theory_entry, text="Теория")
     dp.register_callback_query_handler(select_grade, lambda c: c.data.startswith("grade_"))
-    dp.register_callback_query_handler(select_subject, lambda c: c.data.startswith("subject_"))
+    dp.register_callback_query_handler(select_subject, lambda c: c.data.startswith(("alg_", "geom_", "math_")))
     dp.register_callback_query_handler(select_topic, lambda c: c.data.startswith("topic_"))
     dp.register_callback_query_handler(toggle_read, lambda c: c.data.startswith("read_"))
