@@ -6,6 +6,7 @@ from aiogram.utils import executor
 from dotenv import load_dotenv
 from bot.handlers.menu_handler import register_menu_handlers
 from bot.handlers.theory import register_theory_handler
+from bot.utils.db_funcs import register_user
 
 load_dotenv()
 BOT_TOKEN = os.getenv('BOT_TOKEN')
@@ -18,6 +19,7 @@ register_theory_handler(dp)
 
 @dp.message_handler(commands=["start"])
 async def start_command(message: Message):
+    register_user(message.from_user.id, message.from_user.username)
     await message.answer("Привет! Это чат-бот для подготовки к ЕГЭ по математике")
 
 if __name__ == '__main__':

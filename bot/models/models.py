@@ -33,8 +33,8 @@ class Result(Base):
     is_correct = Column(SMALLINT, nullable=False)
     answered_at = Column(DateTime, nullable=False)
 
-class UserTopicProgress(Base):
-    __tablename__ = "user_topic_progress"
+class UserTopicProgres(Base):
+    __tablename__ = "user_topic_progres"
     topic_progres_id = Column(Integer, primary_key=True, autoincrement=True)
     user_id = Column(BigInteger, ForeignKey("users.telegram_id", ondelete="CASCADE", onupdate="CASCADE"), nullable=False)
     topic_id = Column(Integer, ForeignKey("topics.topic_id", ondelete="CASCADE", onupdate="CASCADE"), nullable=False)

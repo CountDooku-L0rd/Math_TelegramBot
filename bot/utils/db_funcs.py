@@ -1,6 +1,6 @@
 from datetime import datetime
 from bot.utils.db import SessionLocal
-from bot.models.models import User, Topic, UserTopicProgress, Task, Result, Exam, ExamTask, ExamResult
+from bot.models.models import User, Topic, UserTopicProgres, Task, Result, Exam, ExamTask, ExamResult
 
 def register_user(telegram_id:int, username: str = None):
     session = SessionLocal()
@@ -20,16 +20,16 @@ def get_topics_by_class_and_subject(grade: int, subject: str):
 
 def mark_topic_as_read(user_id: int, topic_id: int):
     session = SessionLocal()
-    exists = session.query(UserTopicProgress).filter_by(user_id=user_id, topic_id=topic_id).first()
+    exists = session.query(UserTopicProgres).filter_by(user_id=user_id, topic_id=topic_id).first()
     if not exists:
-        mark = UserTopicProgress(user_id=user_id, topic_id=topic_id, marked_at=datetime.utcnow())
+        mark = UserTopicProgres(user_id=user_id, topic_id=topic_id, marked_at=datetime.utcnow())
         session.add(mark)
         session.commit()
     session.close()
 
 def is_topic_read(user_id: int, topic_id: int) -> bool:
     session = SessionLocal()
-    exists = session.query(UserTopicProgress).filter_by(user_id=user_id, topic_id=topic_id).first()
+    exists = session.query(UserTopicProgres).filter_by(user_id=user_id, topic_id=topic_id).first()
     session.close()
     return exists is not None
 
