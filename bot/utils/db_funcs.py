@@ -1,6 +1,8 @@
 from datetime import datetime
 from bot.utils.db import SessionLocal
 from bot.models.models import User, Topic, UserTopicProgres, Task, Result, Exam, ExamTask, ExamResult
+from datetime import datetime
+from typing import List
 
 def register_user(telegram_id:int, username: str = None):
     session = SessionLocal()
@@ -64,3 +66,27 @@ def save_exam_result(user_id: int, exam_id: int, score: int):
     session.add(result)
     session.commit()
     session.close()
+
+def is_task_solved(task_id: int):
+    session = SessionLocal()
+
+def is_task_solved(user_id:int, task_id:int) -> bool:
+    session = SessionLocal()
+    result = session.query(Result).filter_by(user_id == user_id, task_id==task_id, is_correct=True).first()
+    session.close()
+    return result is not None
+
+def mark_task_solved(user_id:int, task_id:int) -> None:
+    session = SessionLocal()
+    existing = session.query(Result).filter_by(user_id=user_id, task_id=task_id, is_correct=True).first()
+    if not existing:
+        result = Result(user_id = user_id, task_id = task_id, is_correct = True, answered_at = datetime.utcnow())
+        session.add(result)
+        session.commit()
+    session.close()
+
+def get_tasks_by_topic(topic_id: int) -> List[Task]:
+    session = SessionLocal()
+    tasks = session.query(Task).filter_by(topic_id=topic_id).all()
+    session.close()
+    return tasks
