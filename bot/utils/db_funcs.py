@@ -54,6 +54,13 @@ def get_exam_by_id(exam_id: int):
     session.close()
     return exam
 
+def get_task_by_id(task_id:int):
+    session = SessionLocal()
+    task = session.query(Task).filter_by(task_id=task_id).first()
+    session.close()
+    return task
+
+
 def get_exam_tasks(exam_id: int):
     session = SessionLocal()
     tasks = session.query(ExamTask).filter_by(exam_id=exam_id).order_by(ExamTask.task_order).all()
@@ -72,7 +79,7 @@ def is_task_solved(task_id: int):
 
 def is_task_solved(user_id:int, task_id:int) -> bool:
     session = SessionLocal()
-    result = session.query(Result).filter_by(user_id == user_id, task_id==task_id, is_correct=True).first()
+    result = session.query(Result).filter_by(user_id = user_id, task_id=task_id, is_correct=True).first()
     session.close()
     return result is not None
 

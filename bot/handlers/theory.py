@@ -12,7 +12,7 @@ async def theory_entry(message: types.Message):
 
 async def select_grade(callback: CallbackQuery):
     await callback.answer()
-    grade = int(callback.data.split("_")[1])
+    grade = int(callback.data.split("_")[-1])
     user_context[callback.from_user.id] = {"grade": grade}
     await callback.message.edit_text("Выбери предмет:", reply_markup=get_subject_keyboard(grade))
 
@@ -20,6 +20,7 @@ async def select_subject(callback: CallbackQuery):
     await callback.answer()
     subject = callback.data.split("_")[0]
     user_context[callback.from_user.id]["subject"] = subject
+    print (subject)
     grade = user_context[callback.from_user.id]["grade"]
     topics = get_topics_by_class_and_subject(grade, subject)
     if not topics:
@@ -93,11 +94,11 @@ async def back_to_topic(callback: CallbackQuery):
 
 def register_theory_handler(dp: Dispatcher):
     dp.register_message_handler(theory_entry, text="Теория")
-    dp.register_callback_query_handler(select_grade, lambda c: c.data.startswith("grade_"))
-    dp.register_callback_query_handler(select_subject, lambda c: c.data.startswith(("alg_", "geom_", "math_")))
-    dp.register_callback_query_handler(select_topic, lambda c: c.data.startswith("topic_"))
+    dp.register_callback_query_handler(select_grade, lambda c: c.data.startswith("theory_grade_"))
+    dp.register_callback_query_handler(select_subject, lambda c: c.data.startswith(("alg_theory_", "geom_theory_", "math_theory_")))
+    dp.register_callback_query_handler(select_topic, lambda c: c.data.startswith("theory_topic_"))
     dp.register_callback_query_handler(toggle_read, lambda c: c.data.startswith("read_"))
-    dp.register_callback_query_handler(back_to_menu, lambda c: c.data.startswith("back_to_menu"))
-    dp.register_callback_query_handler(back_to_grade, lambda c: c.data.startswith("back_to_grade"))
-    dp.register_callback_query_handler(back_to_subject, lambda c: c.data.startswith("back_to_subject"))
-    dp.register_callback_query_handler(back_to_topic, lambda c: c.data.startswith("back_to_topic"))
+    dp.register_callback_query_handler(back_to_menu, lambda c: c.data.startswith("theory_back_to_menu"))
+    dp.register_callback_query_handler(back_to_grade, lambda c: c.data.startswith("theory_back_to_grade"))
+    dp.register_callback_query_handler(back_to_subject, lambda c: c.data.startswith("theory_back_to_subject"))
+    dp.register_callback_query_handler(back_to_topic, lambda c: c.data.startswith("theory_back_to_topics"))
