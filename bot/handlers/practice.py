@@ -55,15 +55,14 @@ async def prac_submit(callback: CallbackQuery, state: FSMContext):
     user_id = callback.from_user.id
     task_id = get_user_task(user_id)
     if task_id is None:
-        await callback.message.answer("Сначала выберите задание")
+        await callback.answer("Сначала выберите задание")
         return
-    print(task_id)
     photos = get_user_photo(user_id, task_id)
     if not photos:
-        await callback.message.answer("Нет прикреплённых фото.")
+        await callback.answer("Нет прикреплённых фото.")
         return
 
-    await callback.message.answer("Обрабатываю решение...")
+    await callback.answer("Обрабатываю решение...")
 
     latex_parts = []
     for img in photos:
@@ -72,13 +71,13 @@ async def prac_submit(callback: CallbackQuery, state: FSMContext):
             if latex:
                 latex_parts.append(latex)
         except Exception as e:
-            await callback.message.answer("Ошибка при обработке фото.")
+            await callback.answer("Ошибка при обработке фото.")
             return
 
         task = get_task_by_id(task_id)
 
         if not task:
-            await callback.message.answer("Задание не выбрано.")
+            await callback.answer("Задание не выбрано.")
             return
 
     result = check_solution(task.task_text, "$$\n" + "\n".join(latex_parts) + "\n$$")

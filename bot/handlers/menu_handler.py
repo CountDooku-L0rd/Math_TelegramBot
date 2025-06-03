@@ -3,6 +3,8 @@ from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 
 from bot.handlers.theory import theory_entry
 from bot.handlers.practice import practice_entry
+from bot.handlers.trial_exam import exam_entry
+
 
 async def menu_comand (message: types.Message):
     markup = InlineKeyboardMarkup(row_width=1)
@@ -25,16 +27,12 @@ async def menu_callback (callback: types.CallbackQuery):
     elif data == "practice":
         await practice_entry(callback.message)
     elif data == "trial_exam":
-        await callback.message.answer("Раздел экзаменов ещё в разработке")
-    elif data == "ai_consult":
-        await callback.message.answer("Раздел консультанта ещё в разработке")
+        await exam_entry(callback.message)
     elif data == "help":
-        await callback.message.answer("Раздел помощи ещё в разработке")
-    elif data == "statistic":
-        await callback.message.answer("Раздел статистики ещё в разработке")
+        await callback.message.answer("Для того чтобы изучать теорию - жми на ТЕОРИЯ\nЕсли хочешь подтягуть знания на практике - жми на ПРАКТИКА\nЕсли же думаешь что готов испытать себя на пробных экзаменах - жми Пробный ЕГЭ")
     else:
         await callback.message.answer("Неизвестная команда")
 
 def register_menu_handlers(dp: Dispatcher):
     dp.register_message_handler(menu_comand, commands=["menu"])
-    dp.register_callback_query_handler(menu_callback, lambda c: c.data in ["theory", "practice", "trial_exam", "ai_consult", "help", "statistic"])
+    dp.register_callback_query_handler(menu_callback, lambda c: c.data in ["theory", "practice", "trial_exam", "help"])

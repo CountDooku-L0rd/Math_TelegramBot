@@ -67,9 +67,34 @@ def get_exam_tasks(exam_id: int):
     session.close()
     return tasks
 
-def save_exam_result(user_id: int, exam_id: int, score: int):
+def get_exam_task(exam_task_id: int):
     session = SessionLocal()
-    result = ExamResult(user_id = user_id, exam_id = exam_id, score = score, completed_at=datetime.utcnow())
+    tasks = session.query(ExamTask).filter_by(exam_task_id=exam_task_id).order_by(ExamTask.exam_task_id).first()
+    session.close()
+    return tasks
+
+def get_exams():
+    session = SessionLocal()
+    exams = session.query(Exam).order_by(Exam.exam_id).all()
+    session.close()
+    return exams
+
+def get_all_problems(exam_id: int):
+    session = SessionLocal()
+    problems = session.query(ExamTask).filter_by(exam_id=exam_id).all()
+    session.close()
+    return problems
+
+def get_exam_result(exam_id: int, user_id: int):
+    session = SessionLocal()
+    exam_results = session.query(ExamResult).filter_by(exam_id=exam_id, user_id=user_id).first()
+    session.close()
+    return exam_results
+
+
+def save_exam_result(user_id: int, exam_id: int, score: int, feedback:str):
+    session = SessionLocal()
+    result = ExamResult(user_id = user_id, exam_id = exam_id, score = score, completed_at=datetime.utcnow(), feedback=feedback)
     session.add(result)
     session.commit()
     session.close()

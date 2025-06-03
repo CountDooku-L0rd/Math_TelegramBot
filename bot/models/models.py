@@ -61,6 +61,7 @@ class ExamResult(Base):
     exam_id = Column(Integer, ForeignKey("exams.exam_id", onupdate="CASCADE", ondelete="CASCADE"), nullable=False)
     score = Column(Integer, nullable=False)
     completed_at = Column(DateTime, nullable=False)
+    feedback = Column(Text, nullable=False)
 
 class Admin(Base):
     __tablename__ = "admins"
