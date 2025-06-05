@@ -41,9 +41,13 @@ def set_current_task(user_id, exam_task_id):
 def get_current_task(user_id):
     return user_exam_context.get(user_id, {}).get("current_task_id")
 
-def set_exam_timer(user_id, time_left):
+def set_exam_timer(user_id, time_left, timer_message):
     user_exam_context.setdefault(user_id, {})
+    user_exam_context[user_id]["timer_message"] = timer_message
     user_exam_context[user_id]["time_left"] = time_left
+
+def get_user_timer(user_id):
+    return user_exam_context.get(user_id, {}).get("timer_message"), user_exam_context.get(user_id, {}).get("time_left")
 
 def get_exam_timer(user_id):
     return user_exam_context.get(user_id, {}).get("time_left", timedelta(0))

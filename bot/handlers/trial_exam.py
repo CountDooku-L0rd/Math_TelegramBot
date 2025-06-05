@@ -3,7 +3,6 @@ from aiogram.types import CallbackQuery
 from datetime import datetime, timedelta
 from asyncio import sleep
 
-from pyexpat.errors import messages
 
 from bot.utils.db_funcs import get_exams, get_exam_tasks, get_exam_result, save_exam_result, get_exam_task, \
     is_task_solved, get_all_problems
@@ -11,7 +10,7 @@ from bot.keyboards.trial_exam import get_exam_list_keyboard, get_exam_task_keybo
     get_exam_start_keyboard, get_task_nav_keyboard
 from bot.utils.context import (
     set_exam_info, set_current_task, set_exam_timer, get_exam_info, get_current_task, add_user_photo, clear_context,
-    set_task_feedback, user_exam_context, get_all_feedback
+    set_task_feedback, user_exam_context, get_all_feedback, get_user_timer
 )
 from bot.utils.gpt import check_solution, give_feedback
 from bot.utils.mathpix import image_to_latex
@@ -48,17 +47,19 @@ async def start_exam(callback: CallbackQuery):
     keyboard = get_exam_task_keyboard(exam_tasks)
 
     total_time = timedelta(hours=3,minutes=55, seconds=0)
-    set_exam_timer(user_id, total_time)
+    timer_message = callback.message
+    await callback.message.answer(f"Экзамен начат! Время: {total_time}", reply_markup=keyboard)
+    set_exam_timer(user_id, total_time, timer_message)
 
-    await callback.message.answer(f"Экзамен начат! Время: {total_time}", reply_markup=keyboard,)
     while total_time > timedelta(0):
-        if user_exam_context[user_id] is None:
+        if user_exam_context[user_id]["timer_message"] is None:
             break
         await sleep(1)
         total_time -= timedelta(seconds=1)
-        set_exam_timer(user_id, total_time)
+        set_exam_timer(user_id, total_time, timer_message)
         await callback.message.edit_text(f"Осталось времени: {total_time}",  parse_mode="Markdown")
 
+    await timer_message.delete()
     await finish_exam(callback)
 
 async def select_task(callback: CallbackQuery):
@@ -121,20 +122,22 @@ async def finish_exam(callback: CallbackQuery):
     feedback_text = "\n\n"
     for fb in feedback:
         feedback_text.join(fb)
-        feedback_text.join("\n")
+        feedback_text.join("\nКОНЕЦ ОЧЕРЕДНОГО ФИДБЕКА\n")
 
     problems = get_all_problems(exam_id)
     problems_text = "\n\n"
     for problem in problems:
         problems_text.join(problem.task_text)
-        problems_text.join("\n")
+        problems_text.join("\nКОНЕЦ УСЛОВИЯ ОЧЕРЕДНОГО ЗАДАНИЯ\n")
 
     feed = give_feedback(feedback_text, problems_text)
 
     save_exam_result(user_id, exam_id, solved_tasks, feed)
+    timer_message, _ = get_user_timer(user_id)
     clear_context(user_id)
+    if timer_message:
+        await timer_message.delete()
 
-    keyboard = get_exam_result_keyboard(feedback)
     await callback.answer(f"Экзамен завершён! Ваш результат: {solved_tasks}/{total_tasks}")
     exams = get_exams()
     await callback.message.edit_text("Выберите экзамен:", reply_markup=get_exam_list_keyboard(exams))

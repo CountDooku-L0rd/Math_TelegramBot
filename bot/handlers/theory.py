@@ -24,14 +24,14 @@ async def select_subject(callback: CallbackQuery):
     grade = user_context[callback.from_user.id]["grade"]
     topics = get_topics_by_class_and_subject(grade, subject)
     if not topics:
-        await callback.message.answer("Для этого класса и предмета нет тем для изучения.")
+        await callback.answer("Для этого класса и предмета нет тем для изучения.")
         return
 
     await callback.message.edit_text("Выбери тему", reply_markup=get_topic_keyboard(topics))
 
 async def select_topic(callback: CallbackQuery):
     await callback.answer()
-    topic_id = int(callback.data.split("_")[1])
+    topic_id = int(callback.data.split("_")[-1])
     user_id = callback.from_user.id
     from bot.utils.db_funcs import SessionLocal
     from bot.models.models import Topic
@@ -39,7 +39,7 @@ async def select_topic(callback: CallbackQuery):
     topic = sesion.query(Topic).filter(Topic.topic_id == topic_id).first()
     sesion.close()
     if not topic:
-        await callback.message.answer("Выбранной темы не сущестует!")
+        await callback.answer("Выбранной темы не сущестует!")
         return
     read = is_topic_read(user_id, topic_id)
     text = f"<b>{topic.topic_title}</b>\n\n{topic.topic_conspect}"
@@ -81,7 +81,7 @@ async def back_to_subject(callback: CallbackQuery):
     if grade:
         await callback.message.edit_text("Выбери предмет:", reply_markup=get_subject_keyboard(grade))
     else:
-        await callback.message.answer("Не удалось вернуться назад")
+        await callback.answer("Не удалось вернуться назад")
 
 async def back_to_topic(callback: CallbackQuery):
     await callback.answer()

@@ -12,8 +12,6 @@ async def menu_comand (message: types.Message):
         InlineKeyboardButton("Теория", callback_data="theory"),
         InlineKeyboardButton("Практика", callback_data="practice"),
         InlineKeyboardButton("Пробный ЕГЭ", callback_data="trial_exam"),
-        InlineKeyboardButton("AI-консультант", callback_data="ai_consult"),
-        InlineKeyboardButton("Статистика", callback_data="statistic"),
         InlineKeyboardButton("Помощь", callback_data="help"),
     ]
     markup.add(*buttons)
